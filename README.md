@@ -18,85 +18,22 @@ The concept of getting "hardstuck" in a rank of a competitive video game without
 
 The dataset is from the following Kaggle link: https://www.kaggle.com/datasets/skihikingkevin/csgo-matchmaking-damage. The last file, "mm_master_demos.csv," has around 955k entries which spans over around 31500 rounds from 1400 ranked matches, recorded over the course of one month. It has 33 columns.
 
-## Repository Structure
+## Project Directory Structure
 
 ```text
 |   README.md
 |   
 +---dashboard
-+---data
-|   +---processed
-|   |       csgo_cleaned_1.csv
-|   |       csgo_cleaned_2.csv
-|   |       csgo_cleaned_3.csv
-|   |       map_data.csv
-|   |       
-|   \---raw
-|           map_data.csv
-|           mm_master_demos.csv
-|           
++---data (not included in repo)
+|   \---processed  
+|   \---raw         
 +---images
-|       03_arm_dmg.png
-|       03_att_rank_counts.png
-|       03_avg_rank_counts.png
-|       03_bomb_counts.png
-|       03_bomb_site_counts.png
-|       03_cache_vic_heatmap.png
-|       03_cbble_vic_heatmap.png
-|       03_dust2_vic_heatmap.png
-|       03_hitbox_counts.png
-|       03_hp_dmg.png
-|       03_inferno_vic_heatmap.png
-|       03_map_counts.png
-|       03_mirage_vic_heatmap.png
-|       03_overpass_vic_heatmap.png
-|       03_rank_round_heatmap.png
-|       03_rank_wp_heatmap.png
-|       03_round_counts.png
-|       03_round_type_counts.png
-|       03_seconds.png
-|       03_ticks.png
-|       03_train_vic_heatmap.png
-|       03_vic_rank_counts.png
-|       03_wp_counts.png
-|       03_wp_type_counts.png
-|       05_jt_trend.png
-|       de_cache.png
-|       de_cbble.png
-|       de_dust2.png
-|       de_inferno.png
-|       de_mirage.png
-|       de_overpass.png
-|       de_train.png
-|       
 +---notebooks
-|   |   01_data_loading.ipynb
-|   |   02_data_cleaning.ipynb
-|   |   03_eda.ipynb
-|   |   04_feature_engineering.ipynb
-|   |   05_statistics.ipynb
-|   |   
-|   \---.ipynb_checkpoints
-|           01_data_loading-checkpoint.ipynb
-|           02_data_cleaning-checkpoint.ipynb
-|           03_eda-checkpoint.ipynb
-|           04_feature_engineering-checkpoint.ipynb
-|           05_statistics-checkpoint.ipynb
-|           
+|   \---.ipynb_checkpoints           
 +---reports
-+---sql
-|       map_check.sql
-|       
++---sql       
 \---src
-    |   02_data_cleaning.py
-    |   jt_summary.py
-    |   jt_test.py
-    |   sqlcode.py
-    |   
     \---__pycache__
-            duckdb.cpython-314.pyc
-            jt_summary.cpython-314.pyc
-            jt_test.cpython-314.pyc
 ```
 
 ## Project Workflow
