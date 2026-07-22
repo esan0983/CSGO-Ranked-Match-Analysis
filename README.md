@@ -64,12 +64,14 @@ Conclusion (WIP)
 
 * For some weapons, such as the AK-47, there is a trend of proportional usage as rank increases.
 * From the heatmaps, there are a lot of "confrontation hotspots," meaning that the heatmap of attacker coordinate data and victim coordinate data are nearly identical or just flipped in terms of frequency.
+* The ranks of both attackers and victims approximately follow a normal distribution.
+* There are proportionally more damage entries for eco rounds as rank goes up, and the inverse can be said for normal rounds.
 
 ## Feature Engineering 
 
 * The in-between distance between the attacker and the victim was taken into account.
 * The distance between the attacker/victim and the nearest bombsite is taken into account.
-* Ranks (1-16) were binned into rank tiers: Silver, Gold Nova, Master Guardian, and Top Four
+* Ranks (1-18) were binned into rank tiers: Silver, Gold Nova, Master Guardian, and Top Four
 * "hitbox" data turned into an "is_headshot" bool
 * Summed hp_dmg and arm_dmg to total_dmg
 
@@ -81,15 +83,14 @@ Conclusion (WIP)
 
 ## Machine Learning (WIP)
 
-For the first predictive model, I used XGBoost to predict attacker and victim ranks. The inputs (and their justification) are as follows:
+For the first predictive model, I used XGBoost to predict attacker ranks. The inputs (and their justification) are as follows:
 * total_dmg: higher ranked players can deal a lot more damage in one go due to spray control, recoil control, aim, etc.
 * is_headshot: higher ranked players likely go for more headshots
 * wp: some weapons' usage follow a trend as rank tier goes up (refer to the previous section)
 * inbetween_distance: higher ranked players are more experienced shooting from farther distances
 * att_distance_to_bombsite: higher ranked players are less likely to panic and rush in
 
-
-Using a cross-validated random search with a reasonably large search space, the model achieved an accuracy of 0.48, which is almost twice as good as random guessing. The weighted f1 average (0.50) was higher than the macro f1 average (0.40), which indicates that the rarer tiers (Silver and Top Four) were much harder to predict. Surprisingly, despite XGBoost not necessarily understanding the idea of ordinality of rank tiers, the misclassifications were usually of similar tiers, the most common being Gold Nova vs. Master Guardian. The model rarely made a Silver vs. Top Four mistake. This implies that the features were solid enough to display a general pattern. However, we can intuitively see from videos that there are stark differences between the gameplay of a rank 1 and a rank 18 player. Hence, we can safely assume that there's still room for more features, and said features were missed due to either a lack of feature engineering or a lack of game-relevant data from the dataset.
+Using a cross-validated random search with a reasonably large search space, the model achieved an accuracy of 0.49, which is almost twice as good as random guessing. The weighted f1 average (0.51) was higher than the macro f1 average (0.41), which indicates that the rarer tiers (Silver and Top Four) were much harder to predict, likely caused by significant class imbalance. Surprisingly, despite XGBoost not necessarily understanding the idea of ordinality of rank tiers, the misclassifications were usually of similar tiers, the most common being Gold Nova vs. Master Guardian. The model rarely made a Silver vs. Top Four mistake. This implies that the features were solid enough to display a general pattern. However, we can intuitively see from videos that there are stark differences between the gameplay of a rank 1 and a rank 18 player. Hence, we can safely assume that there's still room for more features, and said features were missed due to either a lack of feature engineering or a lack of game-relevant data from the dataset.
 
 ## Results (WIP)
 

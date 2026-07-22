@@ -8,7 +8,7 @@ df = pd.read_csv("../data/raw/mm_master_demos.csv")
 df1 = df[df["att_team"].isin(["Team 1", "Team 2", "World"])]
 
 # Same idea with victim team.
-df2 = df[df["vic_team"].isin(["Team 1", "Team 2"])]
+df2 = df1[df1["vic_team"].isin(["Team 1", "Team 2"])]
 
 # Map data is only limited to seven maps (the most popular ones), so we will remove the rest.
 map_list = ["de_cache", "de_cbble", "de_dust2", "de_inferno", "de_mirage", "de_overpass", "de_train"]
