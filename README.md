@@ -1,10 +1,12 @@
 # CSGO Ranked Analytics (WIP)
 
-This project analyzes CSGO ranked match damage entry data to distinguish gameplay and behavior of players from different ranks. The workflow includes Pandas and SQL-based data cleaning, exploratory data analysis, feature engineering, statistical testing, predictive modeling, and a Tableau dashboard. The goal is to provide insight on what lower-ranked CSGO players do in comparison to higher-ranked players, thus potentially aiding in player training.
+This project analyzes CSGO ranked match damage entry data to distinguish gameplay and behavior of players from different ranks. The workflow includes Pandas and SQL-based data cleaning, exploratory data analysis, feature engineering, statistical testing, predictive modeling, and a Tableau dashboard. The goal is to provide insight on what lower-ranked CSGO players do in comparison to higher-ranked players, thus potentially aiding in player training. Addtionally, with predictive modeling, this project hopes to make matchmaking more precise, especially for unranked players and smurf accounts.
 
 ## Motivation
 
-The concept of getting "hardstuck" in a rank of a competitive video game without knowing the reason is very common, especially because non-professionals don't have full access to game analysts, coaches, data, etc. This project attempts to bridge the gap using already-existing data to infer what a hardstuck player can do.
+There are two sources of motivation: helping players analyze their gameplay and making more accurate matchmaking guesses.
+
+The concept of getting "hardstuck" in a rank of a competitive video game without knowing the reason is very common, especially because non-professionals don't have full access to game analysts, coaches, data, etc. This project attempts to bridge the gap using already-existing data to infer what a hardstuck player can do. Also, as mentioned, this project can serve as a potential solution to unranked matchmaking.
 
 ## Objectives
 
@@ -22,7 +24,6 @@ The dataset is from the following Kaggle link: https://www.kaggle.com/datasets/s
 
 ```text
 |   README.md
-|   
 +---dashboard
 +---data (not included in repo)
 |   \---processed  
@@ -64,17 +65,29 @@ Conclusion (WIP)
 * For some weapons, such as the AK-47, there is a trend of proportional usage as rank increases.
 * From the heatmaps, there are a lot of "confrontation hotspots," meaning that the heatmap of attacker coordinate data and victim coordinate data are nearly identical or just flipped in terms of frequency.
 
-## Feature Engineering (WIP)
+## Feature Engineering 
 
 * The in-between distance between the attacker and the victim was taken into account.
-* The distance between the attacker/victim and the nearest bombsite will be taken into account.
+* The distance between the attacker/victim and the nearest bombsite is taken into account.
+* Ranks (1-16) were binned into rank tiers: Silver, Gold Nova, Master Guardian, and Top Four
+* "hitbox" data turned into an "is_headshot" bool
+* Summed hp_dmg and arm_dmg to total_dmg
 
-## Statistical Analysis
+## Statistical Analysis 
 
-* Using the Cochran-Armitage test and the Benjamini-Hochberg procedure, we conclude that there is a statistically significant relationship between weapon used and attacker rank for 16 of the listed weapons.
-* Using the Jonckheere-Terpstra test, we conclude that because of sample size, the extremely small asymptotic p-value might not necessarily mean there is a statistically significant relationship between attacker rank and the in-between distance between the attacker and the victim.
+* Chi-squared tests were used to confirm that the contingency pairs "att_tier/is_bomb_planted" and "att_tier/round_type" are related
+* ANOVA and pairwise Tukey post-hoc analysis were used to analyze the trend of total damage per entry, inbetween distance, and distance to nearest bombsite as attacker rank tier goes up. All pairs had a statistically significant relationship for damage per entry and inbetween distance, while att_tier/att_distance_from_bombsite and vic_tier/vic_distance_from_bombsite had 4/6 and 5/6 pairs that had a statistically significant relationship, respectively.
+* The Cochran-Armitage test was used to confirm that 14 weapons had a statistically significant trend as attacker rank tier goes up.
 
 ## Machine Learning (WIP)
+
+For the first predictive model, I used XGBoost to predict attacker and victim ranks. The inputs (and their justification) are as follows:
+* total_dmg: higher ranked players can deal a lot more damage in one go due to spray control, recoil control, aim, etc.
+* is_headshot: higher ranked players likely go for more headshots
+* wp: some weapons' usage follow a trend as rank tier goes up (refer to the previous section)
+* inbetween_distance: higher ranked players are more experienced shooting from farther distances
+* att_distance_to_bombsite: higher ranked players are less likely to panic and rush in
+Using a cross-validated random search with a reasonably large search space, the model achieved an accuracy of 0.48, which is almost twice as good as random guessing. The weighted f1 average (0.50) was higher than the macro f1 average (0.40), which indicates that the rarer tiers (Silver and Top Four) were much harder to predict. Surprisingly, despite XGBoost not necessarily understanding the idea of ordinality of rank tiers, the misclassifications were usually of similar tiers, the most common being Gold Nova vs. Master Guardian. The model rarely made a Silver vs. Top Four mistake. This implies that the features were solid enough to display a general pattern. However, we can intuitively see from videos that there are stark differences between the gameplay of a rank 1 and a rank 18 player. Hence, we can safely assume that there's still room for more features, and said features were missed due to either a lack of feature engineering or a lack of game-relevant data from the dataset.
 
 ## Results (WIP)
 
