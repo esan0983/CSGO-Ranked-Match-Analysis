@@ -86,7 +86,8 @@ For the first predictive model, I used XGBoost to predict attacker and victim ra
 * is_headshot: higher ranked players likely go for more headshots
 * wp: some weapons' usage follow a trend as rank tier goes up (refer to the previous section)
 * inbetween_distance: higher ranked players are more experienced shooting from farther distances
-* att_distance_to_bombsite: higher ranked players are less likely to panic and rush in
+* att_distance_to_bombsite: higher ranked players are less likely to panic and rush in\
+\
 Using a cross-validated random search with a reasonably large search space, the model achieved an accuracy of 0.48, which is almost twice as good as random guessing. The weighted f1 average (0.50) was higher than the macro f1 average (0.40), which indicates that the rarer tiers (Silver and Top Four) were much harder to predict. Surprisingly, despite XGBoost not necessarily understanding the idea of ordinality of rank tiers, the misclassifications were usually of similar tiers, the most common being Gold Nova vs. Master Guardian. The model rarely made a Silver vs. Top Four mistake. This implies that the features were solid enough to display a general pattern. However, we can intuitively see from videos that there are stark differences between the gameplay of a rank 1 and a rank 18 player. Hence, we can safely assume that there's still room for more features, and said features were missed due to either a lack of feature engineering or a lack of game-relevant data from the dataset.
 
 ## Results (WIP)
