@@ -62,7 +62,7 @@ base_model = CatBoostClassifier(
 
 param_distributions = {
 
-    "iterations": [100, 250, 500, 750],
+    "iterations": [750],
 
     "learning_rate": loguniform(0.01, 0.2),
 

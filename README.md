@@ -78,7 +78,7 @@ Conclusion (WIP)
 ## Statistical Analysis 
 
 * Chi-squared tests were used to confirm that the contingency pairs "att_tier/is_bomb_planted" and "att_tier/round_type" are related
-* ANOVA and pairwise Tukey post-hoc analysis were used to analyze the trend of total damage per entry, inbetween distance, and distance to nearest bombsite as attacker rank tier goes up. All pairs had a statistically significant relationship for damage per entry and inbetween distance, while att_tier/att_distance_from_bombsite and vic_tier/vic_distance_from_bombsite had 4/6 and 5/6 pairs that had a statistically significant relationship, respectively.
+* ANOVA and pairwise Tukey post-hoc analysis were used to analyze the trend of total damage per entry, inbetween distance, and distance to nearest bombsite as attacker rank tier goes up. All pairs had a statistically significant relationship for damage per entry and inbetween distance, while att_tier/att_distance_from_bombsite and vic_tier/vic_distance_from_bombsite had 5/6 pairs that had a statistically significant relationship, respectively.
 * The Cochran-Armitage test was used to confirm that 14 weapons had a statistically significant trend as attacker rank tier goes up.
 
 ## Machine Learning (WIP)
