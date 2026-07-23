@@ -11,6 +11,7 @@ import sys
 from pandas.api.types import CategoricalDtype
 from scipy.stats import chi2_contingency
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 df = pd.read_csv("../data/processed/csgo_cleaned_3.csv")
 
@@ -220,3 +221,24 @@ df["vic_tier"] = df["vic_tier"].astype(custom_order)
 # )
 
 # print(tukey)
+
+# FOR CHECKING MULTICOLLINEARITY
+df2 = df[["round_type", "is_bomb_planted", "total_dmg", "is_headshot", "wp", 
+          "inbetween_distance", "att_distance_to_bombsite", "vic_distance_to_bombsite",
+          "att_pos_x", "att_pos_y", "vic_pos_x", "vic_pos_y"]]
+
+df2 = df2.astype({col: int for col in df2.select_dtypes(include='bool').columns})
+
+df2_numeric = pd.get_dummies(df2, columns=["round_type", "wp"], drop_first=True)
+
+df2_numeric = df2_numeric.dropna().astype(float)
+
+df2_with_const = df2_numeric.copy()
+df2_with_const['Constant'] = 1.0
+
+vif_data = pd.DataFrame()
+vif_data["Feature"] = df2_numeric.columns
+vif_data["VIF"] = [variance_inflation_factor(df2_with_const.values, i) 
+                   for i in range(df2_numeric.shape[1])]
+
+print(vif_data)

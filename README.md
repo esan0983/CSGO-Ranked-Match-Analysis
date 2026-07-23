@@ -78,19 +78,30 @@ Conclusion (WIP)
 ## Statistical Analysis 
 
 * Chi-squared tests were used to confirm that the contingency pairs "att_tier/is_bomb_planted" and "att_tier/round_type" are related
-* ANOVA and pairwise Tukey post-hoc analysis were used to analyze the trend of total damage per entry, inbetween distance, and distance to nearest bombsite as attacker rank tier goes up. All pairs had a statistically significant relationship for damage per entry and inbetween distance, while att_tier/att_distance_from_bombsite and vic_tier/vic_distance_from_bombsite had 5/6 pairs that had a statistically significant relationship, respectively.
-* The Cochran-Armitage test was used to confirm that 14 weapons had a statistically significant trend as attacker rank tier goes up.
+* ANOVA and pairwise Tukey post-hoc analysis were used to analyze the trend of total damage per entry, inbetween distance, and distance to nearest bombsite as attacker rank tier goes up. All pairs had a statistically significant relationship for damage per entry and inbetween distance, while att_tier/att_distance_from_bombsite and vic_tier/vic_distance_from_bombsite had 5/6 pairs that had a statistically significant relationship.
+* The Cochran-Armitage test was used to confirm that 11 weapons had a statistically significant trend as attacker rank tier goes up.
 
 ## Machine Learning (WIP)
 
-For the first predictive model, I used XGBoost to predict attacker ranks. The inputs (and their justification) are as follows:
+For the parimary predictive model, I used XGBoost (Regression) to predict attacker ranks. The inputs (and their justification) are as follows:
+* round_type: eco rounds could have a slight indication towards higher ranks
+* is_bomb_planted: different ranks might handle pressure differently
+* wp: some weapons' usage follow a trend as rank tier goes up (refer to the previous section)
+* att_pos_x & att_pos_y: higher ranked players know where to shoot
+* vic_pos_y & vic_pos_y: higher ranked players know when to shoot and when victims should be punished due to poor positioning
 * total_dmg: higher ranked players can deal a lot more damage in one go due to spray control, recoil control, aim, etc.
 * is_headshot: higher ranked players likely go for more headshots
-* wp: some weapons' usage follow a trend as rank tier goes up (refer to the previous section)
 * inbetween_distance: higher ranked players are more experienced shooting from farther distances
 * att_distance_to_bombsite: higher ranked players are less likely to panic and rush in
+* vic_distance_to_bombsite: potential punishment towards victims who rush in
 
-Using a cross-validated random search with a reasonably large search space, the model achieved an accuracy of 0.49, which is almost twice as good as random guessing. The weighted f1 average (0.51) was higher than the macro f1 average (0.41), which indicates that the rarer tiers (Silver and Top Four) were much harder to predict, likely caused by significant class imbalance. Surprisingly, despite XGBoost not necessarily understanding the idea of ordinality of rank tiers, the misclassifications were usually of similar tiers, the most common being Gold Nova vs. Master Guardian. The model rarely made a Silver vs. Top Four mistake. This implies that the features were solid enough to display a general pattern. However, we can intuitively see from videos that there are stark differences between the gameplay of a rank 1 and a rank 18 player. Hence, we can safely assume that there's still room for more features, and said features were missed due to either a lack of feature engineering or a lack of game-relevant data from the dataset.
+Using a cross-validated ranndom search, the model achieved a Mean Absolute Error of 1.601. This means that each prediction is, on average, 1.601 ranks off. For a dataset with severe class imbalance, the MAE might not mean much, as the model might've pushed itself into predicting middle ranks where it's most common. However, the Root Mean Square Error is 2.104, which is not dramatically different from the MAE. This means that the model is not making as many catastrophically wrong decisions as a model that would just guess towards the more common ranks. The model achieved an R^2 score of 0.385. This means that the model explains 38.5% of the variation in player rank. While this seems low, it reflects that the dataset is not the big picture, and the fact that a limited set of features achieved such a percentage is already pretty good. Additionally, the model is trying to predict player rank purely from a damage entry and not match-wide data, which could bring in useful features such as clutch factor, adaptability, game sense, etc.
+
+As for rank accuracy, the model predicted the exact rank 24.03% of the time. This can be considered decent, since CSGO ranks range from 1 to 18. The model's prediction was accurate within two ranks 78.28% of the time. I would not trust this as much since if you look at the dataset, ranks 8-12 already cover a big chunk of the spread.
+
+For the secondary predictive model, I used XGBoost (Classification) to predict attacker rank tiers. I used the same inputs
+
+Using a cross-validated random search, the model achieved an accuracy of 0.56, which is almost twice as good as random guessing. The weighted f1 average (0.57) was higher than the macro f1 average (0.48), which indicates that the rarer tiers (Silver and Top Four) were much harder to predict, likely caused by significant class imbalance. Surprisingly, despite XGBoost not necessarily understanding the idea of ordinality of rank tiers, the misclassifications were usually of similar tiers, the most common being Gold Nova vs. Master Guardian. The model rarely made a Silver vs. Top Four mistake. This implies that the features were solid enough to display a general pattern. However, we can intuitively see from videos that there are stark differences between the gameplay of a rank 1 and a rank 18 player. Hence, we can safely assume that there's still room for more features, and said features were missed due to either a lack of feature engineering or a lack of game-relevant data from the dataset.
 
 ## Results (WIP)
 
