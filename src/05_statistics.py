@@ -68,22 +68,22 @@ df["vic_tier"] = df["vic_tier"].astype(custom_order)
 
 # df['att_tier_score'] = df['att_tier'].cat.codes
 
-# def cochran_armitage_trend(scores, n, r, alternative='greater'):
-#     scores, n, r = map(np.asarray, (scores, n, r))
-#     N = n.sum()
-#     R = r.sum()
-#     p_bar = R / N
-#     x_bar = (n * scores).sum() / N
-#     numerator = (n * (scores - x_bar) * (r / n - p_bar)).sum()
-#     denom = np.sqrt(p_bar * (1 - p_bar) * (n * (scores - x_bar) ** 2).sum())
-#     z = numerator / denom
-#     if alternative == 'greater':
-#         p_value = 1 - stats.norm.cdf(z)
-#     elif alternative == 'less':
-#         p_value = stats.norm.cdf(z)
-#     else:
-#         p_value = 2 * (1 - stats.norm.cdf(abs(z)))
-#     return z, p_value
+def cochran_armitage_trend(scores, n, r, alternative='greater'):
+    scores, n, r = map(np.asarray, (scores, n, r))
+    N = n.sum()
+    R = r.sum()
+    p_bar = R / N
+    x_bar = (n * scores).sum() / N
+    numerator = (n * (scores - x_bar) * (r / n - p_bar)).sum()
+    denom = np.sqrt(p_bar * (1 - p_bar) * (n * (scores - x_bar) ** 2).sum())
+    z = numerator / denom
+    if alternative == 'greater':
+        p_value = 1 - stats.norm.cdf(z)
+    elif alternative == 'less':
+        p_value = stats.norm.cdf(z)
+    else:
+        p_value = 2 * (1 - stats.norm.cdf(abs(z)))
+    return z, p_value
 
 def build_counts(df, group_col, outcome_col, outcome_value):
     n_total = df.groupby(group_col).size().rename('n_total')
