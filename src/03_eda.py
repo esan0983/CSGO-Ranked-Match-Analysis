@@ -1,3 +1,6 @@
+# To perform some EDA, simply refer to the comments that are all capitalized. They will contain a description
+# as well as the code block you can uncomment.
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -5,8 +8,6 @@ import seaborn as sns
 import matplotlib.image as mpimg
 
 df = pd.read_csv("../data/processed/csgo_cleaned_2.csv")
-
-# Uncomment what you want to see.
 
 # MAP COUNTS
 # df["map"].value_counts().plot(kind="bar")

@@ -1,3 +1,6 @@
+# To perform whatever test you want, simply refer to the comments that are all capitalized. They will contain a description
+# as well as the code block you can uncomment.
+
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import seaborn as sns
@@ -82,35 +85,35 @@ df["vic_tier"] = df["vic_tier"].astype(custom_order)
 #         p_value = 2 * (1 - stats.norm.cdf(abs(z)))
 #     return z, p_value
 
-# def build_counts(df, group_col, outcome_col, outcome_value):
-#     n_total = df.groupby(group_col).size().rename('n_total')
-#     n_hit = (df[df[outcome_col] == outcome_value]
-#              .groupby(group_col).size()
-#              .rename('n_hit'))
+def build_counts(df, group_col, outcome_col, outcome_value):
+    n_total = df.groupby(group_col).size().rename('n_total')
+    n_hit = (df[df[outcome_col] == outcome_value]
+             .groupby(group_col).size()
+             .rename('n_hit'))
 
-#     counts = pd.concat([n_total, n_hit], axis=1).fillna({'n_hit': 0})
-#     counts['n_hit'] = counts['n_hit'].astype(int)
-#     counts = counts.reset_index()
-#     counts['score'] = counts[group_col].cat.codes
-#     counts = counts.sort_values('score')
-#     return counts
+    counts = pd.concat([n_total, n_hit], axis=1).fillna({'n_hit': 0})
+    counts['n_hit'] = counts['n_hit'].astype(int)
+    counts = counts.reset_index()
+    counts['score'] = counts[group_col].cat.codes
+    counts = counts.sort_values('score')
+    return counts
 
-# def run_ca(counts, alternative='greater'):
-#     z, p = cochran_armitage_trend(counts['score'].values, counts['n_total'].values,
-#                                    counts['n_hit'].values, alternative=alternative)
-#     N = counts['n_total'].sum()
-#     effect_r = z / np.sqrt(N) if N > 0 else np.nan
+def run_ca(counts, alternative='greater'):
+    z, p = cochran_armitage_trend(counts['score'].values, counts['n_total'].values,
+                                   counts['n_hit'].values, alternative=alternative)
+    N = counts['n_total'].sum()
+    effect_r = z / np.sqrt(N) if N > 0 else np.nan
 
-#     X = sm.add_constant(counts['score'].astype(float))
-#     y_prop = counts['n_hit'] / counts['n_total']
-#     try:
-#         model = sm.GLM(y_prop, X, family=sm.families.Binomial(),
-#                         freq_weights=counts['n_total'].values).fit()
-#         odds_ratio = np.exp(model.params['score'])
-#     except Exception:
-#         odds_ratio = np.nan
+    X = sm.add_constant(counts['score'].astype(float))
+    y_prop = counts['n_hit'] / counts['n_total']
+    try:
+        model = sm.GLM(y_prop, X, family=sm.families.Binomial(),
+                        freq_weights=counts['n_total'].values).fit()
+        odds_ratio = np.exp(model.params['score'])
+    except Exception:
+        odds_ratio = np.nan
 
-#     return z, p, effect_r, odds_ratio
+    return z, p, effect_r, odds_ratio
 
 # counts = build_counts(df, 'att_tier', 'wp', 'AK47')
 # z, p, effect_r, orr = run_ca(counts, alternative='greater')

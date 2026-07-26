@@ -1,20 +1,18 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import seaborn as sns
 import pandas as pd
-import os
-from pandas.api.types import CategoricalDtype
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import (
+    train_test_split,
+    RandomizedSearchCV
+)
 import numpy as np
 import warnings
 from scipy.stats import uniform, randint, loguniform
-from xgboost import XGBClassifier
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.metrics import classification_report
-from sklearn.utils.class_weight import compute_sample_weight
-from sklearn.metrics import ConfusionMatrixDisplay
 import xgboost as xgb
-from xgboost import XGBRFClassifier
+from xgboost import XGBRegressor
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score
+)
 
  
 df = pd.read_csv("data/processed/csgo_cleaned_3.csv")
@@ -41,14 +39,11 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-warnings.filterwarnings("ignore", category=UserWarning)
-
-from xgboost import XGBRegressor
-from sklearn.metrics import (
-    mean_absolute_error,
-    mean_squared_error,
-    r2_score
+X_train_sub, X_val, y_train_sub, y_val = train_test_split(
+    X_train, y_train, test_size=0.15, random_state=42
 )
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 base_model = XGBRegressor(
 
@@ -66,7 +61,7 @@ base_model = XGBRegressor(
 
 param_distributions = {
 
-    "n_estimators": [750, 1000],
+    "n_estimators": [1000],
 
     "learning_rate": loguniform(0.01, 0.2),
 
@@ -108,9 +103,25 @@ random_search = RandomizedSearchCV(
 
 print(base_model.get_xgb_params())
 
-random_search.fit(X_train, y_train)
+random_search.fit(
+    X_train_sub, 
+    y_train_sub, 
+)
 
-best_model = random_search.best_estimator_
+best_params = random_search.best_params_
+best_params.pop("n_estimators", None) 
+final_model = XGBRegressor(
+    objective="reg:squarederror",
+    device="cuda",
+    tree_method="hist",
+    enable_categorical=True,
+    early_stopping_rounds=50,
+    random_state=42,
+    n_estimators=2000,
+    **best_params
+)
+final_model.fit(X_train_sub, y_train_sub, eval_set=[(X_val, y_val)], verbose=False)
+best_model = final_model
 
 predictions = best_model.predict(X_test)
 
@@ -152,4 +163,3 @@ print(f"Within 2 Ranks : {within2:.2%}")
 print(f"Within 3 Ranks : {within3:.2%}")
 
 print("Feature Importances:", best_model.feature_importances_)
-xgb.plot_importance(best_model, importance_type='gain')

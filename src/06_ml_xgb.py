@@ -25,7 +25,7 @@ df3["att_tier"] = df3["att_tier"].astype(custom_order)
 df3["vic_tier"] = df3["vic_tier"].astype(custom_order)
  
 X = df3.drop(columns=["att_tier", "vic_tier"])
-y = df3["att_tier"]
+y = df3["att_tier"].cat.codes
 
 X["is_headshot"] = X["is_headshot"].astype(int)
 X["wp"] = X["wp"].astype("category")
@@ -36,8 +36,11 @@ X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
     test_size=0.2,
-    random_state=42,
-    stratify=y
+    random_state=42
+)
+
+X_train_sub, X_val, y_train_sub, y_val = train_test_split(
+    X_train, y_train, test_size=0.15, random_state=42
 )
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -56,7 +59,7 @@ base_model = XGBClassifier(
 
 param_distributions = {
 
-    "n_estimators":[750, 1000],
+    "n_estimators":[1000],
 
     "learning_rate":loguniform(0.01,0.2),
 
@@ -89,9 +92,27 @@ random_search = RandomizedSearchCV(
 
 print(base_model.get_xgb_params())
 
-random_search.fit(X_train, y_train, sample_weight=sample_weights)
+random_search.fit(
+    X_train_sub, 
+    y_train_sub, 
+)
 
-best_model = random_search.best_estimator_
+best_params = random_search.best_params_
+best_params.pop("n_estimators", None) 
+final_model = XGBClassifier(
+    objective="multi:softprob",
+    num_class=4,
+    eval_metric="mlogloss",
+    device="cuda",
+    tree_method="hist",
+    enable_categorical=True,
+    early_stopping_rounds=50,
+    random_state=42,
+    n_estimators=2000,
+    **best_params
+)
+final_model.fit(X_train_sub, y_train_sub, eval_set=[(X_val, y_val)], verbose=False)
+best_model = final_model
 predictions = best_model.predict(X_test)
 
 print("\n--- Balanced Classification Report ---")

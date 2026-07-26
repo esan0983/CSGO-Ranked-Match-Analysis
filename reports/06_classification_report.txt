@@ -1,28 +1,20 @@
 --- Balanced Classification Report (XGBOOST)---
               precision    recall  f1-score   support
 
-           0       0.28      0.49      0.36      1138
-           1       0.68      0.58      0.63     22854
-           2       0.57      0.55      0.56     17775
-           3       0.29      0.49      0.36      4670
+           0       0.95      0.43      0.59      1153
+           1       0.74      0.83      0.78     22894
+           2       0.71      0.72      0.71     17665
+           3       0.79      0.42      0.55      4725
 
-    accuracy                           0.56     46437
-   macro avg       0.46      0.53      0.48     46437
-weighted avg       0.59      0.56      0.57     46437
+    accuracy                           0.73     46437
+   macro avg       0.80      0.60      0.66     46437
+weighted avg       0.74      0.73      0.73     46437
 
-MAE is 0.5519
+Best Parameters: {'colsample_bytree': np.float64(0.9568186220708453), 'gamma': np.float64(0.21605426612344986), 'learning_rate': np.float64(0.10816166071270562), 'max_depth': 8, 'min_child_weight': 1, 'reg_alpha': np.float64(0.20305586522289132), 'reg_lambda': np.float64(0.09334064019986364), 'subsample': np.float64(0.6780971951192178)}
+Feature Importances: [0.10479861 0.09772538 0.082528   0.08491324 0.13039716 0.09851296
+ 0.10016363 0.0990843  0.10167088 0.10020581]
 
---- Balanced Classification Report (CATBOOST) ---
-              precision    recall  f1-score   support
-
-           0       0.07      0.46      0.13      1138
-           1       0.59      0.37      0.46     22854
-           2       0.47      0.32      0.38     17775
-           3       0.16      0.43      0.23      4670
-
-    accuracy                           0.36     46437
-   macro avg       0.32      0.40      0.30     46437
-weighted avg       0.49      0.36      0.40     46437
+MAE is 0.3093
 
 --- Classification Report (ORDINAL LOGISTIC REGRESSION) ---
          Current function value: 1.022939
@@ -41,12 +33,13 @@ weighted avg       0.49      0.36      0.40     46437
 weighted avg       0.43      0.50      0.43     46437
 
 ----- Regression Results (XGBOOST REGRESSION) -----
-MAE : 1.601
-RMSE: 2.104
-R²  : 0.357
-Best Parameters: {'colsample_bytree': np.float64(0.9579309401710595), 'gamma': np.float64(0.16278488880914346), 'learning_rate': np.float64(0.15826541904647565), 'max_depth': 8, 'min_child_weight': 7, 'n_estimators': 1000, 'reg_alpha': np.float64(0.0015167330688076208), 'reg_lambda': np.float64(0.02001342062287998), 'subsample': np.float64(0.7554709158757928)}
-Within 1 Rank  : 57.47%
-Within 2 Ranks : 78.28%
-Within 3 Ranks : 89.92%
-Feature Importances: [0.10829131 0.08995414 0.07859808 0.10810294 0.13465719 0.09413291
- 0.09591472 0.09581745 0.09798676 0.09654447]
+MAE : 1.532
+RMSE: 2.065
+R²  : 0.381
+Best Parameters: {'colsample_bytree': np.float64(0.9568186220708453), 'gamma': np.float64(0.21605426612344986), 'learning_rate': np.float64(0.10816166071270562), 'max_depth': 8, 'min_child_weight': 1, 'reg_alpha': np.float64(0.20305586522289132), 'reg_lambda': np.float64(0.09334064019986364), 'subsample': np.float64(0.6780971951192178)}
+----- Rank Accuracy -----
+Exact Rank     : 26.27%
+Within 1 Rank  : 60.32%
+Within 2 Ranks : 79.54%
+Within 3 Ranks : 90.17%
+Feature Importances: [0.09684927 0.08486142 0.07622583 0.09151503 0.13421425 0.09969826 0.10185445 0.10226858 0.10643177 0.10608108]

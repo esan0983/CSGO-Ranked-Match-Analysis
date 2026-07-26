@@ -1,3 +1,6 @@
+# To perform some EDA, simply refer to the comments that are all capitalized. They will contain a description
+# as well as the code block you can uncomment.
+
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import seaborn as sns
@@ -36,6 +39,8 @@ df4["vic_tier"] = pd.cut(df4["vic_rank"], bins=tier_boundaries, labels=tiers)
 df5 = df4.drop(columns=["att_rank", "vic_rank"])
 df5["att_tier"].describe()
 
+# RELATIONSHIP BETWEEN ATTACKER RANK TIER AND TOTAL DAMAGE
+
 # sorted_data = [df5.loc[df5["att_tier"] == "Silver", "total_dmg"], df5.loc[df5["att_tier"] == "Gold Nova", "total_dmg"], 
 #     df5.loc[df5["att_tier"] == "Master Guardian", "total_dmg"], df5.loc[df5["att_tier"] == "Top Four", "total_dmg"]]
 # labels = ['Silver', 'Gold Nova', 'Master Guardian', 'Top Four']
@@ -50,6 +55,8 @@ df5["att_tier"].describe()
 
 df6 = df5[df5["total_dmg"] > 0]
 
+# SOME CROSSTABS. REFER TO THE CODE TO SEE WHICH VARIABLES ARE OF INTEREST.
+
 # ct = pd.crosstab(df6["is_bomb_planted"], df6["att_tier"])
 # ct
 
@@ -58,6 +65,8 @@ df6 = df5[df5["total_dmg"] > 0]
 
 # ct = pd.crosstab(df6["wp"], df6["att_tier"])
 # ct
+
+# RELATIONSHIP BETWEEN INBETWEEN DISTANCE AND ATTACKER RANK TIER
 
 # sorted_data = [df6.loc[df6["att_tier"] == "Silver", "inbetween_distance"], df6.loc[df6["att_tier"] == "Gold Nova", "inbetween_distance"], 
 #     df6.loc[df6["att_tier"] == "Master Guardian", "inbetween_distance"], df6.loc[df6["att_tier"] == "Top Four", "inbetween_distance"]]

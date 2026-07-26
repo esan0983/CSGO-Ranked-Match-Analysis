@@ -20,7 +20,8 @@ print("df info:")
 print(df.info())
  
 df2 = df[df["map"] == "de_mirage"]
-df3 = df2[["round_type", "is_bomb_planted", "total_dmg", "is_headshot", "wp", "inbetween_distance", "att_distance_to_bombsite", "vic_distance_to_bombsite", "att_tier", "vic_tier"]]
+df3 = df2[["round_type", "is_bomb_planted", "total_dmg", "is_headshot", "wp", "inbetween_distance", "att_distance_to_bombsite", "vic_distance_to_bombsite", "att_tier", "vic_tier",
+           "att_pos_x", "vic_pos_x"]]
 print("df3 info:")
 print(df3.info())
  
@@ -28,20 +29,17 @@ custom_order = CategoricalDtype(categories=['Silver', 'Gold Nova', 'Master Guard
 df3["att_tier"] = df3["att_tier"].astype(custom_order)
 df3["vic_tier"] = df3["vic_tier"].astype(custom_order)
  
-X = df3.drop(columns = ["att_tier", "vic_tier", "vic_distance_to_bombsite"])
-y1 = df3["att_tier"].cat.codes
-y2 = df3["vic_tier"].cat.codes
- 
-X["is_headshot"] = X["is_headshot"].astype(int)
-X["is_bomb_planted"] = X["is_bomb_planted"].astype(int)
-X = pd.get_dummies(X, columns=["wp", "round_type"], drop_first=True, dtype=int)
+X = df3.drop(columns=["att_tier", "vic_tier"])
+y = df3["att_tier"].cat.codes
+
+X = pd.get_dummies(X, columns=["wp", "round_type", "is_headshot", "is_bomb_planted"], drop_first=True, dtype=int)
 
 X_train, X_test, y_train, y_test = train_test_split(
     X,
-    y1,
+    y,
     test_size=0.2,
     random_state=42,
-    stratify=y1
+    stratify=y
 )
 
 warnings.filterwarnings("ignore", category=UserWarning)
