@@ -1,6 +1,30 @@
-# CSGO Ranked Analytics
+# CS:GO Ranked Player Behavior Analysis & Rank Prediction
 
-This project analyzes CSGO ranked match damage entry data to distinguish gameplay and behavior of players from different ranks. The workflow includes Pandas and SQL-based data cleaning, exploratory data analysis, feature engineering, statistical testing, predictive modeling, and a Tableau dashboard. The goal is to provide insight on what lower-ranked CSGO players do in comparison to higher-ranked players, thus potentially aiding in player training. Addtionally, with predictive modeling, this project hopes to make matchmaking more precise, especially for unranked players and smurf accounts.
+## Overview
+
+An end-to-end data science project analyzing over 955,000 CS:GO damage entries recorded from over 1,200 matches to understand how player behavior changes across skill levels.
+
+This project combines Python, SQL, Statistics, Machine Learning, and Tableau to:
+* identify statistically significant gameplay trends
+* predict player rank from damage entries using XGBoost
+* visualize findings through an interactive dashboard
+
+## Tech Stack
+* Python
+* SQL
+* pandas
+* NumPy
+* SciPy
+* scikit-learn
+* XGBoost
+* Tableau
+* Git
+* Jupyter Notebook
+
+## Dashboard
+![Project Dashboard](dashboard/db_screenshot.png)
+
+The dashboard (including the packaged version) is located in the "dashboard" folder.
 
 ## Motivation
 
@@ -24,48 +48,55 @@ The dataset is from the following Kaggle link: https://www.kaggle.com/datasets/s
 ## Project Directory Structure
 
 ```text
-|   README.md
-+---dashboard
-+---data (not included in repo)
-|   \---processed  
-|   \---raw         
-+---images
-+---notebooks
-|   \---.ipynb_checkpoints           
-+---reports
-+---sql       
-+---src
+data/           Not included in repo, refer to the Kaggle dataset
+src/            Compact code from notebooks and predictive modeling code
+sql/            Map data validation
+notebooks/      Data Loading/Cleaning, EDA, Feature Engineering, and Statistics (modeling is in the src file)
+dashboard/      Tableau workbook
+reports/        Classification reports
+images/         EDA results
 ```
 
 ## Project Workflow
 ```text
-Raw Data
-   ↓
+Kaggle Dataset
+      │
+      ▼
 Pandas Cleaning
-   ↓
+      │
+      ▼
 SQL Validation
-   ↓
-EDA
-   ↓
+      │
+      ▼
+Exploratory Data Analysis
+      │
+      ▼
 Feature Engineering
-   ↓
-Statistical Analysis
-   ↓
-Machine Learning
-   ↓
+      │
+      ▼
+Statistical Inference
+      │
+      ▼
+XGBoost Modeling
+      │
+      ▼
 Model Interpretation
-   ↓
-Tableau Dashboard (WIP)
-   ↓
-Conclusion (WIP)
+      │
+      ▼
+Interactive Tableau Dashboard
 ```
 
-## Exploratory Data Analysis (EDA)
+## Data Cleaning
 
+Both Pandas and SQL were used in data cleaning. Pandas was mostly used, and only one SQL query was made for map data validation.
+
+## Exploratory Data Analysis (EDA)
+Some interesting findings:
 * For some weapons, such as the AK-47, there is a trend of proportional usage as rank increases.
 * From the heatmaps, there are a lot of "confrontation hotspots," meaning that the heatmap of attacker coordinate data and victim coordinate data are nearly identical or just flipped in terms of frequency.
 * The ranks of both attackers and victims approximately follow a normal distribution.
 * There are proportionally more damage entries for eco rounds as rank goes up, and the inverse can be said for normal rounds.
+* Headshot percentage increases as rank goes up
 
 ## Feature Engineering 
 
@@ -80,48 +111,48 @@ Conclusion (WIP)
 * Chi-squared tests were used to confirm that the contingency pairs "att_tier/is_bomb_planted" and "att_tier/round_type" are related
 * ANOVA and pairwise Tukey post-hoc analysis were used to analyze the trend of total damage per entry, inbetween distance, and distance to nearest bombsite as attacker rank tier goes up. All pairs had a statistically significant relationship for damage per entry and inbetween distance, while att_tier/att_distance_from_bombsite and vic_tier/vic_distance_from_bombsite had 5/6 pairs that had a statistically significant relationship.
 * The Cochran-Armitage test was used to confirm that 11 weapons had a statistically significant trend as attacker rank tier goes up.
+* VIF scores showed that att_pos_y and vic_pos_y heavily contributed to multicollinearity. This is most likely because of map design: there are multiple chokepoints and engagement hotspots, and thus if one knows att_pos_x, they could easily predict att_pos_y.
 
-## Machine Learning
+## Predictive Modeling
 
-Note that for machine learning, only the map with the most damage entries (Mirage) was chosen. This is because exact positioning was taken into account, so having only one map is necessary.
+Note that for machine learning, only the map with the most damage entries (Mirage) was chosen. This is because exact positioning was taken into account, so having only one map is necessary. Both machine learning models mentioned were tuned using cross-validated Random Search with early stopping.
 
 For the parimary predictive model, I used XGBoost (Regression) to predict attacker ranks. The inputs (and their justification) are as follows:
 * round_type: eco rounds could have a slight indication towards higher ranks
 * is_bomb_planted: different ranks might handle pressure differently
 * wp: some weapons' usage follow a trend as rank tier goes up (refer to the previous section)
-* att_pos_x & att_pos_y: higher ranked players know where to shoot
-* vic_pos_y & vic_pos_y: higher ranked players know when to shoot and when victims should be punished due to poor positioning
+* att_pos_x: higher ranked players know where to shoot
+* vic_pos_y: higher ranked players know when to shoot and when victims should be punished due to poor positioning
 * total_dmg: higher ranked players can deal a lot more damage in one go due to spray control, recoil control, aim, etc.
 * is_headshot: higher ranked players likely go for more headshots
 * inbetween_distance: higher ranked players are more experienced shooting from farther distances
 * att_distance_to_bombsite: higher ranked players are less likely to panic and rush in
 * vic_distance_to_bombsite: potential punishment towards victims who rush in
 
-Using a cross-validated ranndom search with early stopping, the model achieved a Mean Absolute Error of 1.601. This means that each prediction is, on average, 1.601 ranks off. For a dataset with severe class imbalance, the MAE might not mean much, as the model might've pushed itself into predicting middle ranks where it's most common. However, the Root Mean Square Error is 2.104, which is not dramatically different from the MAE. This means that the model is not making as many catastrophically wrong decisions as a model that would just guess towards the more common ranks. The model achieved an R^2 score of 0.385. This means that the model explains 38.5% of the variation in player rank. While this seems low, it reflects that the dataset is not the big picture, and the fact that a limited set of features achieved such a percentage is already pretty good. Additionally, the model is trying to predict player rank purely from a damage entry and not match-wide data, which could bring in useful features such as clutch factor, adaptability, game sense, etc.
+The model achieved a Mean Absolute Error of 1.653. This means that each prediction is, on average, 1.601 ranks off. Moreover, the Root Mean Square Error is 2.065, which is not dramatically different from the MAE. This means that the model is not making as many catastrophically wrong decisions as a model that would just guess towards the more common ranks. The model achieved an R^2 score of 0.385. This means that the model explains 38.1% of the variation in player rank. This reflects that the dataset is not the big picture, and the fact that a limited set of features achieved such a percentage is already pretty good. Additionally, the model is trying to predict player rank purely from a damage entry and not match-wide data, which could bring in useful features such as clutch factor, adaptability, game sense, communication, etc.
 
-As for rank accuracy, the model predicted the exact rank 24.03% of the time. This can be considered decent, since CSGO ranks range from 1 to 18. The model's prediction was accurate within two ranks 78.28% of the time. I would not trust this as much since if you look at the dataset, ranks 8-12 already cover a big chunk of the spread.
+As for rank accuracy, the model predicted the exact rank 26.27% of the time. This can be considered decent, since CSGO ranks range from 1 to 18. The model's prediction was accurate within two ranks 79.54% of the time.
 
 For the secondary predictive model, I used XGBoost (Classification) to predict attacker rank tiers. I used the same inputs.
 
-Using a cross-validated random search with an early stopping, the model achieved an accuracy of 0.56, which is almost twice as good as random guessing. The weighted f1 average (0.57) was higher than the macro f1 average (0.48), which indicates that the rarer tiers (Silver and Top Four) were much harder to predict, likely caused by significant class imbalance. Surprisingly, despite XGBoost not necessarily understanding the idea of ordinality of rank tiers, the misclassifications were usually of similar tiers, the most common being Gold Nova vs. Master Guardian. The model rarely made a Silver vs. Top Four mistake. This implies that the features were solid enough to display a general pattern. However, we can intuitively see from videos that there are stark differences between the gameplay of a rank 1 and a rank 18 player. Hence, we can safely assume that there's still room for more features, and said features were missed due to either a lack of feature engineering or a lack of game-relevant data from the dataset.
+The model achieved an accuracy of 0.56, which is almost twice as good as random guessing. The weighted f1 average (0.57) was higher than the macro f1 average (0.48), which indicates that the rarer tiers (Silver and Top Four) were much harder to predict, likely caused by significant class imbalance. Surprisingly, despite XGBoost not necessarily understanding the idea of ordinality of rank tiers, the misclassifications were usually of similar tiers, the most common being Gold Nova vs. Master Guardian. The model rarely made a Silver vs. Top Four mistake. This implies that the features were solid enough to display a general pattern. However, we can intuitively see from videos that there are stark differences between the gameplay of a rank 1 and a rank 18 player. Hence, we can safely assume that there's still room for more features, and said features were missed due to either a lack of feature engineering or a lack of game-relevant data from the dataset.
 
-## Results
+## Key Results
+* Processed 955,000+ gameplay events that involved 10,000+ players over 1,200+ matches
+* Engineered six gameplay features
+* Confirmed significant gameplay trends using Chi-Square, ANOVA, Tukey HSD, and Cochran-Armitage tests
+* Used VIF scores to detect two variables causing multicollinearity
+* XGBoost Regression:
+   * MAE: 1.532
+   * RMSE: 2.065
+   * R^2: 0.381
+   * Exact rank prediction: 26.27%
+   * Within two ranks: 79.54%
+* Built interactive dashboard
 
-Statistical testing and predictive modeling showed that while most features in the dataset do follow a trend as rank goes up, the regression showed that the model explains only 38.1% of the variation in player rank. This is somewhat expected because of the lack of pre-engagement information for each damage entry.
-
-## Dashboard
-
-The dashboard (including the packaged version) and a screenshot of it is located in the "dashboard" folder.
-
-## Technologies
-
-* Python
-* SQL
-* pandas
-* NumPy
-* SciPy
-* scikit-learn
-* XGBoost
-* Tableau
-* Git
-* Jupyter Notebook
+## Limitations
+* Only one month of match data
+* Severe imbalances within ranks (normally distributed around rank 10)
+* Dataset is about damage entry, thus lacking match context when training models
+* Predictive modeling results only available for one map
+* Missing other features such as communication, distance to nearest chokepoint, positioning a few seconds before engagement, etc

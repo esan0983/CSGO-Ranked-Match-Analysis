@@ -22,6 +22,17 @@ custom_order = CategoricalDtype(categories=['Silver', 'Gold Nova', 'Master Guard
 df["att_tier"] = df["att_tier"].astype(custom_order)
 df["vic_tier"] = df["vic_tier"].astype(custom_order)
 
+# OLS FOR ATT_RANK VS HEADSHOT PERCENTAGE
+# headshot_percentages = df.groupby("att_rank")["is_headshot"].mean()*100
+# X = sorted(df["att_rank"].unique())
+# y = headshot_percentages
+# print(X)
+# print(y)
+
+# X_with_constant = sm.add_constant(X)
+# stats_model = sm.OLS(y, X_with_constant).fit()
+# print(stats_model.summary())
+
 # SOME CHI-SQUARE TESTS
 
 # ct = pd.crosstab(df["is_bomb_planted"], df["att_tier"])

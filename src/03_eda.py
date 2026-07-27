@@ -126,6 +126,19 @@ df = pd.read_csv("../data/processed/csgo_cleaned_2.csv")
 # plt.savefig("../images/03_avg_rank_counts.png")
 # plt.show()
 
+# ATT_RANK VS HEADSHOT PERCENTAGE
+# headshot_percentages = (df['hitbox'] == 'Head').groupby(df['att_rank']).mean() * 100
+# headshot_percentages
+# X = sorted(df["att_rank"].unique())
+# print(X)
+# print(headshot_percentages)
+# plt.xlabel('Attacker Rank')
+# plt.ylabel('Headshot %')
+# plt.title('Headshot Percentage by Rank')
+# plt.savefig("../images/03_headshot_percentages.png")
+
+# plt.plot(X, headshot_percentages)
+
 # SOME CROSSTABS
 # pd.crosstab(df["hitbox"], df["wp_type"], normalize=1)
 # pd.crosstab(df["att_rank"], df["wp_type"], normalize=0)

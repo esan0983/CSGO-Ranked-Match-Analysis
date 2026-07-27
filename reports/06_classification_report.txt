@@ -1,3 +1,15 @@
+----- Regression Results (BASELINE RANDOM FOREST) -----
+MAE : 2.063
+RMSE: 2.515
+R²  : 0.082
+Best Parameters: {'max_depth': 17, 'max_features': np.float64(0.7782844631778207), 'max_samples': np.float64(0.6439986631130484), 'min_samples_leaf': 12, 'min_samples_split': 56, 'n_estimators': 300}
+
+----- Rank Accuracy -----
+Exact Rank     : 12.18%
+Within 1 Rank  : 40.16%
+Within 2 Ranks : 67.95%
+Within 3 Ranks : 83.90%
+
 --- Balanced Classification Report (XGBOOST)---
               precision    recall  f1-score   support
 
